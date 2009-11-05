@@ -1,0 +1,96 @@
+<?php
+
+require_once 'PHPUnit/Framework.php';
+
+require_once dirname(dirname(__FILE__)) . '/lib/OptionParser.php';
+
+class OptionParserTest extends PHPUnit_Framework_TestCase
+{
+
+    public function testShortOption()
+    {
+        $op = new OptionParser;
+        $op->addRule('a');
+        $op->addRule('b');
+
+        $this->assertFalse(isset($op->a));
+        $this->assertFalse(isset($op->b));
+
+        $args = array("-", "-a", "-b");
+        $op->parse($args);
+
+        $this->assertTrue(isset($op->a));
+        $this->assertTrue(isset($op->b));
+        $this->assertTrue($op->a);
+        $this->assertTrue($op->b);
+    }
+
+    public function testShortOptionCluster()
+    {
+        $op = new OptionParser;
+        $op->addRule('a');
+        $op->addRule('b');
+
+        $this->assertFalse(isset($op->a));
+        $this->assertFalse(isset($op->b));
+
+        $args = array("-", "-ab");
+        $op->parse($args);
+
+        $this->assertTrue(isset($op->a));
+        $this->assertTrue(isset($op->b));
+        $this->assertTrue($op->a);
+        $this->assertTrue($op->b);
+    }
+
+    public function testShortOptionWithParameter()
+    {
+        $op = new OptionParser;
+        $op->addRule('a|b:');
+        $op->addRule('c::');
+
+        $this->assertTrue($op->isOptional('a'));
+        $this->assertTrue($op->isOptional('b'));
+        $this->assertTrue($op->isRequired('c'));
+
+        $args = array("-", "-a", "1", "-c", "string");
+        $op->parse($args);
+
+        $this->assertEquals($op->a, 1);
+        $this->assertEquals($op->b, 1);
+        $this->assertEquals($op->c, 'string');
+
+        $this->setExpectedException('Exception');
+
+        $args = array('-', '-c');
+        $op->parse($args);
+    }
+
+    public function testLongOption()
+    {
+        $op = new OptionParser;
+        $op->addRule('verbose');
+        $op->addRule('quiet');
+
+        $args = array("-", "--verbose");
+        $op->parse($args);
+
+        $this->assertTrue($op->verbose);
+        $this->assertFalse($op->quiet);
+    }
+
+    public function testLongOptionWithParameter()
+    {
+        $op = new OptionParser;
+        $op->addRule('verbose');
+        $op->addRule('dir::');
+
+        $args = array("-", "--verbose=yes", '--dir', 'lib/test/dir');
+        $op->parse($args);
+
+        $this->assertEquals($op->verbose, 'yes');
+        $this->assertEquals($op->dir, 'lib/test/dir');
+    }
+
+}
+
