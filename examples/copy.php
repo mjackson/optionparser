@@ -10,7 +10,8 @@ function enable_debugging()
 }
 
 $parser = new OptionParser;
-$parser->addHead("Copies the contents of one file (or stream) to another.\nUsage: " . basename($argv[0]) . " -i <input> [ options ]\n");
+$parser->addHead("Copies the contents of one file (or stream) to another.\n");
+$parser->addHead("Usage: " . basename($argv[0]) . " -i <input> [ options ]\n");
 $parser->addRule('d|debug', 'enable_debugging', "Enable debug mode");
 $parser->addRule('i|input::', 'The input file to read, use "-" for stdin');
 $parser->addRule('o|output:', '(optional) The output file to write to, defaults to stdout');

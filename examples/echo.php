@@ -3,7 +3,8 @@
 require dirname(__FILE__) . '/../lib/OptionParser.php';
 
 $parser = new OptionParser;
-$parser->addHead("Echo the parameters of each flag as determined by OptionParser.\nUsage: " . basename($argv[0]) . ' [ options ]');
+$parser->addHead("Echo the parameters of each flag as determined by OptionParser.\n");
+$parser->addHead("Usage: " . basename($argv[0]) . " [ options ]\n");
 $parser->addRule('a', "A short flag with no parameter");
 $parser->addRule('b:', "A short flag with an optional parameter");
 $parser->addRule('c::', "A short flag with a required parameter");
