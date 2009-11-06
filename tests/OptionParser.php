@@ -17,6 +17,27 @@ class OptionParserTest extends PHPUnit_Framework_TestCase
         $op->parse($args);
     }
 
+    public function testArguments()
+    {
+        $op = new OptionParser;
+        $op->addRule('a:');
+
+        $args = array('progname', 'word', '-a', 'a string');
+        $op->parse($args);
+
+        $this->assertEquals($op->getProgramName(), 'progname');
+        $this->assertEquals($op->a, 'a string');
+        $this->assertEquals($args, array('word'));
+
+        $op->setConfig(OptionParser::CONF_DASHDASH);
+
+        $args = array('progname', '-a', '--', '-a', 'word');
+        $op->parse($args);
+
+        $this->assertTrue($op->a === true);
+        $this->assertEquals($args, array('--', '-a', 'word'));
+    }
+
     public function testShortOption()
     {
         $op = new OptionParser;

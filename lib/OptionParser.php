@@ -426,7 +426,7 @@ class OptionParser
         $this->_programName = array_shift($argv);
 
         for ($i = 0; $i < count($argv); $i++) {
-            if (preg_match('/^(--?)([a-z\-]+)/i', $argv[$i], $matches)) {
+            if (preg_match('/^(--?)([a-z][a-z\-]*)/i', $argv[$i], $matches)) {
                 // throw away the flag
                 array_splice($argv, $i, 1);
 
@@ -476,7 +476,7 @@ class OptionParser
         $rule = $this->_rules[$ruleIndex];
 
         if ($rule['required'] === true) {
-            if (isset($argv[$i]) && !$this->isFlag($argv[$i])) {
+            if (isset($argv[$i]) && $this->isParam($argv[$i])) {
                 $slice = array_splice($argv, $i--, 1);
                 $param = $slice[0];
             } else {
@@ -484,7 +484,7 @@ class OptionParser
             }
         } elseif ($rule['required'] === 'optional') {
             $param = true;
-            if (isset($argv[$i]) && !$this->isFlag($argv[$i])) {
+            if (isset($argv[$i]) && $this->isParam($argv[$i])) {
                 $slice = array_splice($argv, $i--, 1);
                 $param = $slice[0];
             }
@@ -500,6 +500,21 @@ class OptionParser
     }
 
     /**
+     * Returns true if the given string is considered a parameter.
+     *
+     * @param   string
+     * @return  bool
+     */
+    protected function isParam($string)
+    {
+        if ($this->_config & self::CONF_DASHDASH && $string == '--') {
+            return false;
+        }
+
+        return !$this->isFlag($string);
+    }
+
+    /**
      * Returns true if the given string is considered a flag.
      *
      * @param   string
@@ -507,7 +522,7 @@ class OptionParser
      */
     protected function isFlag($string)
     {
-        return (bool) preg_match('/^--?[a-z\-]/i', $string);
+        return (bool) preg_match('/^--?[a-z][a-z\-]*$/i', $string);
     }
 
     /**
