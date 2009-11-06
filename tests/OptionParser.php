@@ -7,6 +7,16 @@ require_once dirname(dirname(__FILE__)) . '/lib/OptionParser.php';
 class OptionParserTest extends PHPUnit_Framework_TestCase
 {
 
+    public function testInvalidOption()
+    {
+        $op = new OptionParser;
+
+        $this->setExpectedException('Exception');
+
+        $args = array('-', '-c');
+        $op->parse($args);
+    }
+
     public function testShortOption()
     {
         $op = new OptionParser;
@@ -83,13 +93,18 @@ class OptionParserTest extends PHPUnit_Framework_TestCase
     {
         $op = new OptionParser;
         $op->addRule('verbose');
-        $op->addRule('dir::');
+        $op->addRule('dir-name::');
 
-        $args = array("-", "--verbose=yes", '--dir', 'lib/test/dir');
+        $args = array("-", "--verbose=yes", '--dir-name', 'lib/test/dir');
         $op->parse($args);
 
         $this->assertEquals($op->verbose, 'yes');
-        $this->assertEquals($op->dir, 'lib/test/dir');
+        $this->assertEquals($op->getOption('dir-name'), 'lib/test/dir');
+
+        $this->setExpectedException('Exception');
+
+        $args = array('-', '--dir-name');
+        $op->parse($args);
     }
 
 }
