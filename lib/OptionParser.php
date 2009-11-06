@@ -249,7 +249,12 @@ class OptionParser
         $maxFlagsWidth = 0;
         $flagDescriptions = array();
         foreach ($this->_rules as $ruleIndex => $rule) {
-            $flags = implode('|', array_keys($this->_flags, $ruleIndex));
+            $flagList = array_keys($this->_flags, $ruleIndex);
+            $flags = array();
+            foreach ($flagList as $flag) {
+                $flags[] = strlen($flag) == 1 ? "-$flag" : "--$flag";
+            }
+            $flags = implode(',', $flags);
             $maxFlagsWidth = max(strlen($flags), $maxFlagsWidth);
             $flagDescriptions[$flags] = $rule['description'];
         }
@@ -416,7 +421,7 @@ class OptionParser
 
         if ($argv === null) {
             // create a copy so global $argv is not modified
-            $argv = array_slice($GLOBALS['argv'], 0);
+            $argv = array_slice($_SERVER['argv'], 0);
         }
 
         $this->_programName = array_shift($argv);
