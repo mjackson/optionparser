@@ -43,13 +43,13 @@ A more helpful error message might be to show the user the options that she can 
 
 # Examples
 
-All scripts in the examples directory are designed to be run on a Unix/Linux machine as executables like this:
+Scripts in the examples directory may be invoked using the PHP interpreter on the command line, like so:
 
-    $ ./copy
+    $ php echo.php
 
-If you would like to run the examples on Windows, simply open the file and delete the first line. Then, use the php interpreter directly:
+A Unix-style executable is also provided for *nix users:
 
-    $ php copy
+    $ ./echo
 
 # Tests
 
