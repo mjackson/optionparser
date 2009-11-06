@@ -11,10 +11,10 @@ function enable_debugging()
 }
 
 $parser = new OptionParser;
-$parser->onHead("Usage: " . basename(__FILE__) . " -i <input> [ options ]\n");
+$parser->onHead("Copies the contents of one file (or stream) to another.\nUsage: " . basename(__FILE__) . " -i <input> [ options ]\n");
 $parser->addRule('d|debug', 'enable_debugging', "Enable debug mode");
-$parser->addRule('i|input::', 'The input file to read');
-$parser->addRule('o|output:', '(optional) The output file to write to');
+$parser->addRule('i|input::', 'The input file to read, use "-" for stdin');
+$parser->addRule('o|output:', '(optional) The output file to write to, defaults to stdout');
 $parser->addRule('help', 'Display a help message and exit');
 $parser->onTail("\nThis program brought to you by me!\n");
 
@@ -27,7 +27,6 @@ try {
 if ($parser->help) {
     die($parser->getUsage());
 }
-
 if (!isset($parser->input)) {
     die("You must specify an input file!\n\n" . $parser->getUsage());
 }
@@ -65,4 +64,9 @@ while (($data = fread($in, 512)) !== '') {
 
 fclose($in);
 fclose($out);
+
+if ($debug) {
+    // let the user know we're done
+    echo "Finished!\n";
+}
 
