@@ -41,6 +41,22 @@ A more helpful error message might be to show the user the options that she can 
         die($parser->getUsage());
     }
 
+# Examples
+
+All scripts in the examples directory are designed to be run on a Unix/Linux machine as executables like this:
+
+    $ ./copy
+
+If you would like to run the examples on Windows, simply open the file and delete the first line. Then, use the php interpreter directly:
+
+    $ php copy
+
+# Tests
+
+OptionParser uses the [PHPUnit](http://www.phpunit.de/) unit testing framework to test the code. In order to run the tests, do the following from the project root directory:
+
+    $ phpunit tests/OptionParser.php
+
 # Credits
 
 OptionParser draws inspiration from several other option parsers including [GNU getopt](http://www.gnu.org/software/libc/manual/html_node/Getopt.html), Ruby's [OptionParser](http://raa.ruby-lang.org/project/optionparser/), and [Zend_Console_Getopt](http://framework.zend.com/manual/en/zend.console.getopt.html).
