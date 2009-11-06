@@ -1,0 +1,68 @@
+#!/usr/bin/env php
+<?php
+
+require dirname(__FILE__) . '/../lib/OptionParser.php';
+
+$debug = false;
+function enable_debugging()
+{
+    global $debug;
+    $debug = true;
+}
+
+$parser = new OptionParser;
+$parser->onHead("Usage: " . basename(__FILE__) . " -i <input> [ options ]\n");
+$parser->addRule('d|debug', 'enable_debugging', "Enable debug mode");
+$parser->addRule('i|input::', 'The input file to read');
+$parser->addRule('o|output:', '(optional) The output file to write to');
+$parser->addRule('help', 'Display a help message and exit');
+$parser->onTail("\nThis program brought to you by me!\n");
+
+try {
+    $parser->parse();
+} catch (Exception $e) {
+    die($parser->getUsage());
+}
+
+if ($parser->help) {
+    die($parser->getUsage());
+}
+
+if (!isset($parser->input)) {
+    die("You must specify an input file!\n\n" . $parser->getUsage());
+}
+
+if ($parser->input == '-') {
+    // read from stdin
+    $input = 'php://stdin';
+} else {
+    $input = $parser->input;
+}
+
+$in = @fopen($input, 'rb');
+if ($in === false) {
+    die("Unable to open input stream: $input");
+}
+
+if (isset($parser->output)) {
+    if ($parser->output === true) {
+        $output = 'php://stdout';
+    } else {
+        $output = $parser->output;
+    }
+} else {
+    $output = 'php://stdout';
+}
+
+$out = @fopen($output, 'w');
+if ($out === false) {
+    die("Unable to open output stream: $output");
+}
+
+while (($data = fread($in, 512)) !== '') {
+    fwrite($out, $data);
+}
+
+fclose($in);
+fclose($out);
+
