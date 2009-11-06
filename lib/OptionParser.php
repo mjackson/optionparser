@@ -14,9 +14,9 @@ class OptionParser
     /**
      * The current version of OptionParser.
      *
-     * @var     string
+     * @var string
      */
-    const VERSION = '0.2';
+    const VERSION = '0.3';
 
     /**#@+
      * Configuration constant.
@@ -95,8 +95,8 @@ class OptionParser
      */
     public function __construct($config=null)
     {
-        if ($config == null) {
-            $config = self::CONF_ALL;
+        if (!is_int($config)) {
+            $config = 0;
         }
         $this->setConfig($config);
     }
@@ -104,11 +104,11 @@ class OptionParser
     /**
      * Alias for {@link setOption()}.
      *
-     * @return  OptionParser        This object
+     * @return  void
      */
     public function __set($flag, $value)
     {
-        return $this->setOption($flag, $value);
+        $this->setOption($flag, $value);
     }
 
     /**
@@ -183,14 +183,13 @@ class OptionParser
      *
      * @param   string  $flag       The name of the flag
      * @param   mixed   $value      The new value for the option
-     * @return  OptionParser        This object
+     * @return  void
      */
     public function setOption($flag, $value)
     {
         $this->checkFlag($flag);
         $ruleIndex = $this->_flags[$flag];
         $this->_options[$ruleIndex] = $value;
-        return $this;
     }
 
     /**
@@ -477,15 +476,15 @@ class OptionParser
         $rule = $this->_rules[$ruleIndex];
 
         if ($rule['required'] === true) {
-            $slice = array_splice($argv, $i--, 1);
-            if (empty($slice)) {
-                throw new Exception("Option \"$flag\" requires a parameter");
-            } else {
+            if (isset($argv[$i]) && !$this->isFlag($argv[$i])) {
+                $slice = array_splice($argv, $i--, 1);
                 $param = $slice[0];
+            } else {
+                throw new Exception("Option \"$flag\" requires a parameter");
             }
         } elseif ($rule['required'] === 'optional') {
             $param = true;
-            if (isset($argv[$i]) && !preg_match('/^--?[a-z\-]/i', $argv[$i])) {
+            if (isset($argv[$i]) && !$this->isFlag($argv[$i])) {
                 $slice = array_splice($argv, $i--, 1);
                 $param = $slice[0];
             }
@@ -498,6 +497,17 @@ class OptionParser
         }
 
         $this->_options[$ruleIndex] = $param;
+    }
+
+    /**
+     * Returns true if the given string is considered a flag.
+     *
+     * @param   string
+     * @return  bool
+     */
+    protected function isFlag($string)
+    {
+        return (bool) preg_match('/^--?[a-z\-]/i', $string);
     }
 
     /**
