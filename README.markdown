@@ -34,7 +34,7 @@ Next, parse your arguments. This function can be called multiple times with the 
 
 A more helpful error message might be to show the user the options that she can use to run your program:
 
-    $parser->onHead("Usage: myprog [ options ]\n");
+    $parser->addHead("Usage: myprog [ options ]\n");
     try {
         $parser->parse();
     } catch (Exception $e) {
@@ -64,4 +64,7 @@ OptionParser draws inspiration from several other option parsers including [GNU 
 # Requirements
 
 OptionParser requires PHP version 5 or greater.
+
+<small>OptionParser is copyright 2009 Michael J. I. Jackson.</small>
+
 

@@ -11,12 +11,12 @@ function enable_debugging()
 }
 
 $parser = new OptionParser;
-$parser->onHead("Copies the contents of one file (or stream) to another.\nUsage: " . basename(__FILE__) . " -i <input> [ options ]\n");
+$parser->addHead("Copies the contents of one file (or stream) to another.\nUsage: " . basename(__FILE__) . " -i <input> [ options ]\n");
 $parser->addRule('d|debug', 'enable_debugging', "Enable debug mode");
 $parser->addRule('i|input::', 'The input file to read, use "-" for stdin');
 $parser->addRule('o|output:', '(optional) The output file to write to, defaults to stdout');
 $parser->addRule('help', 'Display a help message and exit');
-$parser->onTail("\nThis program brought to you by me!\n");
+$parser->addTail("\nThis program brought to you by me!\n");
 
 try {
     $parser->parse();
@@ -32,7 +32,6 @@ if (!isset($parser->input)) {
 }
 
 if ($parser->input == '-') {
-    // read from stdin
     $input = 'php://stdin';
 } else {
     $input = $parser->input;

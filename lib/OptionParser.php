@@ -16,7 +16,7 @@ class OptionParser
      *
      * @var     string
      */
-    const VERSION = '0.1';
+    const VERSION = '0.2';
 
     /**#@+
      * Configuration constant.
@@ -217,7 +217,7 @@ class OptionParser
      * @param   string  $message    The usage message
      * @return  void
      */
-    public function onHead($message)
+    public function addHead($message)
     {
         $this->_head[] = $message;
     }
@@ -229,7 +229,7 @@ class OptionParser
      * @param   string  $message    The usage message
      * @return  void
      */
-    public function onTail($message)
+    public function addTail($message)
     {
         $this->_tail[] = $message;
     }
