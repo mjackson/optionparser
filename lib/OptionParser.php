@@ -442,11 +442,17 @@ class OptionParser
                             array_splice($argv, $i, 0, $value);
                         }
                     }
-                    $this->parseOption($flag, $argv, $i);
-                } else {
-                    foreach (str_split($flag) as $shortFlag) {
-                        $this->parseOption($shortFlag, $argv, $i);
+                    if ($this->parseOption($flag, $argv, $i)) {
+                        $i--;
                     }
+                } else {
+                    $paramsTaken = 0;
+                    foreach (str_split($flag) as $shortFlag) {
+                        if ($this->parseOption($shortFlag, $argv, $i)) {
+                            $paramsTaken++;
+                        }
+                    }
+                    $i -= $paramsTaken;
                 }
 
                 // decrement the index for the flag
@@ -463,30 +469,33 @@ class OptionParser
     /**
      * Extracts the option value for the given $flag from the arguments array.
      *
-     * @param   string  $flag       The flag being parsed
-     * @param   array   $argv       The argument values
-     * @param   int     $i          The current index in the arguments array
-     * @return  void
+     * @param   string  $flag   The flag being parsed
+     * @param   array   $argv   The argument values
+     * @param   int     $i      The current index in the arguments array
+     * @return  bool            True if a parameter was taken, false otherwise
      */
-    protected function parseOption($flag, &$argv, &$i)
+    protected function parseOption($flag, &$argv, $i)
     {
         $this->checkFlag($flag);
 
+        $paramWasTaken = false;
         $ruleIndex = $this->_flags[$flag];
         $rule = $this->_rules[$ruleIndex];
 
         if ($rule['required'] === true) {
             if (isset($argv[$i]) && $this->isParam($argv[$i])) {
-                $slice = array_splice($argv, $i--, 1);
+                $slice = array_splice($argv, $i, 1);
                 $param = $slice[0];
+                $paramWasTaken = true;
             } else {
                 throw new Exception("Option \"$flag\" requires a parameter");
             }
         } elseif ($rule['required'] === 'optional') {
             $param = true;
             if (isset($argv[$i]) && $this->isParam($argv[$i])) {
-                $slice = array_splice($argv, $i--, 1);
+                $slice = array_splice($argv, $i, 1);
                 $param = $slice[0];
+                $paramWasTaken = true;
             }
         } else {
             $param = true;
@@ -497,6 +506,8 @@ class OptionParser
         }
 
         $this->_options[$ruleIndex] = $param;
+
+        return $paramWasTaken;
     }
 
     /**

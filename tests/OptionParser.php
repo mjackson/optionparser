@@ -60,7 +60,8 @@ class OptionParserTest extends PHPUnit_Framework_TestCase
     {
         $op = new OptionParser;
         $op->addRule('a');
-        $op->addRule('b');
+        $op->addRule('b:');
+        $op->addRule('c::');
 
         $this->assertFalse(isset($op->a));
         $this->assertFalse(isset($op->b));
@@ -70,8 +71,17 @@ class OptionParserTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(isset($op->a));
         $this->assertTrue(isset($op->b));
+        $this->assertFalse(isset($op->c));
         $this->assertTrue($op->a);
         $this->assertTrue($op->b);
+        $this->assertFalse($op->c);
+
+        $args = array('-', '-abc', 'bvalue', 'cvalue');
+        $op->parse($args);
+
+        $this->assertTrue($op->a);
+        $this->assertEquals($op->b, 'bvalue');
+        $this->assertEquals($op->c, 'cvalue');
     }
 
     public function testShortOptionWithParameter()
