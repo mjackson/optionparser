@@ -3,10 +3,10 @@
 /**
  * This class is designed to ease the task of parsing the arguments that are provided
  * to scripts from the command line. It supports several advanced features including
- * an extended syntax for specifying parser rules and custom construction an display
- * of usage messages.
+ * support for both short and long options, optional and/or required parameter checking,
+ * automatic callback execution, and pretty printing of usage messages.
  *
- * @author      Michael J. I. Jackson <mjijackson@gmail.com>
+ * @author      Michael J. I. Jackson <michael@mjijackson.com>
  */
 class OptionParser
 {
