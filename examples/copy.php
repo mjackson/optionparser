@@ -28,7 +28,7 @@ if ($parser->help) {
     die($parser->getUsage());
 }
 if (!isset($parser->input)) {
-    die("You must specify an input file!\n\n" . $parser->getUsage());
+    die("You must specify an input file!\n");
 }
 
 if ($parser->input == '-') {
@@ -39,7 +39,7 @@ if ($parser->input == '-') {
 
 $in = @fopen($input, 'rb');
 if ($in === false) {
-    die("Unable to open input stream: $input");
+    die("Unable to open input stream: $input\n");
 }
 
 if (isset($parser->output)) {
@@ -54,7 +54,7 @@ if (isset($parser->output)) {
 
 $out = @fopen($output, 'w');
 if ($out === false) {
-    die("Unable to open output stream: $output");
+    die("Unable to open output stream: $output\n");
 }
 
 while (($data = fread($in, 512)) !== '') {
