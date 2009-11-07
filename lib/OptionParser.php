@@ -262,7 +262,7 @@ class OptionParser
             if (empty($flagList)) {
                 continue;
             }
-            usort($flagList, array($this, 'compareStrings'));
+            usort($flagList, array($this, 'compareFlags'));
             $flags = array();
             $short = false;
             foreach ($flagList as $flag) {
@@ -571,7 +571,7 @@ class OptionParser
      * @param   string
      * @return  int
      */
-    protected function compareStrings($a, $b)
+    protected function compareFlags($a, $b)
     {
         $lena = strlen($a);
         $lenb = strlen($b);
