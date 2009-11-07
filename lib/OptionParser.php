@@ -245,15 +245,38 @@ class OptionParser
         $head = wordwrap(implode('', $this->_head), $maxWidth);
         $tail = wordwrap(implode('', $this->_tail), $maxWidth);
 
+        // determine if there are any short flags
+        $hasShortFlag = false;
+        $allFlags = array_keys($this->_flags);
+        foreach ($allFlags as $flag) {
+            if (strlen($flag) == 1) {
+                $hasShortFlag = true;
+                break;
+            }
+        }
+
         $maxFlagsWidth = 0;
         $flagDescriptions = array();
         foreach ($this->_rules as $ruleIndex => $rule) {
             $flagList = array_keys($this->_flags, $ruleIndex);
-            $flags = array();
-            foreach ($flagList as $flag) {
-                $flags[] = strlen($flag) == 1 ? "-$flag" : "--$flag";
+            if (empty($flagList)) {
+                continue;
             }
-            $flags = implode(',', $flags);
+            usort($flagList, array($this, 'compareStrings'));
+            $flags = array();
+            $short = false;
+            foreach ($flagList as $flag) {
+                if (strlen($flag) == 1) {
+                    $flags[] = "-$flag";
+                    $short = true;
+                } else {
+                    $flags[] = "--$flag";
+                }
+            }
+            $flags = implode(', ', $flags);
+            if ($hasShortFlag && !$short) {
+                $flags = "    $flags";
+            }
             $maxFlagsWidth = max(strlen($flags), $maxFlagsWidth);
             $flagDescriptions[$flags] = $rule['description'];
         }
@@ -442,20 +465,14 @@ class OptionParser
                             array_splice($argv, $i, 0, $value);
                         }
                     }
-                    if ($this->parseOption($flag, $argv, $i)) {
-                        $i--;
-                    }
+                    $this->parseOption($flag, $argv, $i);
                 } else {
-                    $paramsTaken = 0;
                     foreach (str_split($flag) as $shortFlag) {
-                        if ($this->parseOption($shortFlag, $argv, $i)) {
-                            $paramsTaken++;
-                        }
+                        $this->parseOption($shortFlag, $argv, $i);
                     }
-                    $i -= $paramsTaken;
                 }
 
-                // decrement the index for the flag
+                // decrement the index for the flag that was taken
                 $i--;
             } elseif ($argv[$i] == '--') {
                 if ($this->_config & self::CONF_DASHDASH) {
@@ -472,13 +489,12 @@ class OptionParser
      * @param   string  $flag   The flag being parsed
      * @param   array   $argv   The argument values
      * @param   int     $i      The current index in the arguments array
-     * @return  bool            True if a parameter was taken, false otherwise
+     * @return  void
      */
     protected function parseOption($flag, &$argv, $i)
     {
         $this->checkFlag($flag);
 
-        $paramWasTaken = false;
         $ruleIndex = $this->_flags[$flag];
         $rule = $this->_rules[$ruleIndex];
 
@@ -486,7 +502,6 @@ class OptionParser
             if (isset($argv[$i]) && $this->isParam($argv[$i])) {
                 $slice = array_splice($argv, $i, 1);
                 $param = $slice[0];
-                $paramWasTaken = true;
             } else {
                 throw new Exception("Option \"$flag\" requires a parameter");
             }
@@ -495,7 +510,6 @@ class OptionParser
             if (isset($argv[$i]) && $this->isParam($argv[$i])) {
                 $slice = array_splice($argv, $i, 1);
                 $param = $slice[0];
-                $paramWasTaken = true;
             }
         } else {
             $param = true;
@@ -506,8 +520,6 @@ class OptionParser
         }
 
         $this->_options[$ruleIndex] = $param;
-
-        return $paramWasTaken;
     }
 
     /**
@@ -547,6 +559,28 @@ class OptionParser
         if (!array_key_exists($flag, $this->_flags)) {
             throw new Exception("Option \"$flag\" is not recognized");
         }
+    }
+
+    /**
+     * Used as a callback function for {@link usort()} when comparing two
+     * flags. Flags are compared for length. If the two flags being compared are
+     * of equal length, the flag that appeared first in the specification will
+     * return first.
+     *
+     * @param   string
+     * @param   string
+     * @return  int
+     */
+    protected function compareStrings($a, $b)
+    {
+        $lena = strlen($a);
+        $lenb = strlen($b);
+        if ($lena == $lenb) {
+            // returning -1 here will keep strings of the same length in the
+            // same order they originally were in
+            return -1;
+        }
+        return $lena > $lenb ? 1 : -1;
     }
 
     /**
