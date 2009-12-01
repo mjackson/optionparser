@@ -20,6 +20,8 @@ class OptionParser
 
     /**#@+
      * Configuration constant.
+     *
+     * @var int
      */
     /**
      * Use to stop parsing arguments when a double hyphen (--) is found.
@@ -35,6 +37,27 @@ class OptionParser
      * All configuration options.
      */
     const CONF_ALL = 3;
+    /**#@-*/
+
+    /**#@+
+     * Parameter constant.
+     *
+     * @var int
+     */
+    /**
+     * Used for a parameter that is not required.
+     */
+    const PARAM_NOTREQUIRED = 0;
+
+    /**
+     * Used for a parameter that is required.
+     */
+    const PARAM_REQUIRED = 1;
+
+    /**
+     * Used for a parameter that is optional.
+     */
+    const PARAM_OPTIONAL = 2;
     /**#@-*/
 
     /**
@@ -93,7 +116,7 @@ class OptionParser
      *
      * @param   int     $config     An optional configuration flag
      */
-    public function __construct($config=null)
+    public function __construct($config=0)
     {
         if (!is_int($config)) {
             $config = 0;
@@ -330,7 +353,7 @@ class OptionParser
         $rule = array(
             'description'   => '',
             'callback'      => null,
-            'required'      => false
+            'required'      => self::PARAM_NOTREQUIRED
         );
 
         $flags = array_shift($args);
@@ -340,9 +363,9 @@ class OptionParser
 
         if (preg_match('/::?$/', $flags, $match)) {
             if (strlen($match[0]) == 2) {
-                $rule['required'] = true;
+                $rule['required'] = self::PARAM_REQUIRED;
             } else {
-                $rule['required'] = 'optional';
+                $rule['required'] = self::PARAM_OPTIONAL;
             }
             $flags = rtrim($flags, ':');
         }
@@ -401,7 +424,7 @@ class OptionParser
     public function expectsParameter($flag)
     {
         $rule = $this->getRule($flag);
-        return $rule && $rule['required'] !== false;
+        return $rule && $rule['required'] !== self::PARAM_NOTREQUIRED;
     }
 
     /**
@@ -412,7 +435,7 @@ class OptionParser
     public function isRequired($flag)
     {
         $rule = $this->getRule($flag);
-        return $rule && $rule['required'] === true;
+        return $rule && $rule['required'] === self::PARAM_REQUIRED;
     }
 
     /**
@@ -423,7 +446,7 @@ class OptionParser
     public function isOptional($flag)
     {
         $rule = $this->getRule($flag);
-        return $rule && $rule['required'] === 'optional';
+        return $rule && $rule['required'] === self::PARAM_OPTIONAL;
     }
 
     /**
@@ -498,14 +521,14 @@ class OptionParser
         $ruleIndex = $this->_flags[$flag];
         $rule = $this->_rules[$ruleIndex];
 
-        if ($rule['required'] === true) {
+        if ($rule['required'] == self::PARAM_REQUIRED) {
             if (isset($argv[$i]) && $this->isParam($argv[$i])) {
                 $slice = array_splice($argv, $i, 1);
                 $param = $slice[0];
             } else {
                 throw new Exception("Option \"$flag\" requires a parameter");
             }
-        } elseif ($rule['required'] === 'optional') {
+        } elseif ($rule['required'] == self::PARAM_OPTIONAL) {
             $param = true;
             if (isset($argv[$i]) && $this->isParam($argv[$i])) {
                 $slice = array_splice($argv, $i, 1);
@@ -604,4 +627,3 @@ class OptionParser
     }
 
 }
-
