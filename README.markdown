@@ -1,8 +1,8 @@
-# Overview
+### Overview
 
 OptionParser is a parser for command-line options for PHP. It supports both short and long options, optional and/or required parameter checking, automatic callback execution, and pretty printing of usage messages.
 
-# Usage
+### Usage
 
 First create a parser object and then use it to parse your arguments. Examples explain it best:
 
@@ -41,7 +41,7 @@ A more helpful error message might be to show the user the options that she can 
         die($parser->getUsage());
     }
 
-# Examples
+### Examples
 
 Scripts in the examples directory may be invoked using the PHP interpreter on the command line, like so:
 
@@ -51,21 +51,20 @@ A Unix-style executable is also provided for *nix users:
 
     $ ./echo
 
-# Tests
+### Tests
 
-OptionParser uses the [PHPUnit](http://www.phpunit.de/) unit testing framework to test the code. In order to run the tests, do the following from the project root directory:
+OptionParser uses the [PHPUnit](http://www.phpunit.de/) unit testing framework to test the code. In order to run the tests, run the following command from the project root directory:
 
     $ phpunit tests/OptionParser.php
 
-# Credits
+### Credits
 
 OptionParser draws inspiration from several other option parsers including [GNU getopt](http://www.gnu.org/software/libc/manual/html_node/Getopt.html), Ruby's [OptionParser](http://raa.ruby-lang.org/project/optionparser/), and [Zend_Console_Getopt](http://framework.zend.com/manual/en/zend.console.getopt.html).
 
-# Requirements
+### Requirements
 
 OptionParser requires PHP version 5 or greater.
 
-# License
+### License
 
 OptionParser is released under the terms of the MIT license. Please read the LICENSE file for further information.
-
