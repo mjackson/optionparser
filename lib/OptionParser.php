@@ -267,7 +267,7 @@ class OptionParser
         $head = wordwrap(implode('', $this->_head), $maxWidth);
         $tail = wordwrap(implode('', $this->_tail), $maxWidth);
 
-        // determine if there are any short flags
+        # determine if there are any short flags
         $hasShortFlag = false;
         $allFlags = array_keys($this->_flags);
         foreach ($allFlags as $flag) {
@@ -339,6 +339,7 @@ class OptionParser
      * $parser->addRule('long-option');
      * $parser->addRule('b::'); // "b" with required parameter
      * $parser->addRule('q|quiet', "Don't output to the console"); // "q" or "quiet" with description
+     * $parser->addRule('c', 'my_callback'); // my_callback will be called if the "c" flag is used
      * $parser->addRule('o|output:'); // "o" or "output" with optional parameter
      * </code>
      *
@@ -369,7 +370,7 @@ class OptionParser
             $flags = rtrim($flags, ':');
         }
 
-        // consume the remaining arguments
+        # consume the remaining arguments
         while (count($args)) {
             $arg = array_pop($args);
             if (is_callable($arg)) {
@@ -464,7 +465,7 @@ class OptionParser
         $this->_options = array();
 
         if ($argv === null) {
-            // create a copy so global $argv is not modified
+            # create a copy so global $argv is not modified
             $argv = array_slice($_SERVER['argv'], 0);
         }
 
@@ -472,7 +473,7 @@ class OptionParser
 
         for ($i = 0; $i < count($argv); $i++) {
             if (preg_match('/^(--?)([a-z][a-z\-]*)/i', $argv[$i], $matches)) {
-                // throw away the flag
+                # throw away the flag
                 array_splice($argv, $i, 1);
 
                 $flag = $matches[2];
@@ -494,11 +495,11 @@ class OptionParser
                     }
                 }
 
-                // decrement the index for the flag that was taken
+                # decrement the index for the flag that was taken
                 $i--;
             } elseif ($argv[$i] == '--') {
                 if ($this->_config & self::CONF_DASHDASH) {
-                    // stop processing arguments
+                    # stop processing arguments
                     break;
                 }
             }
@@ -598,8 +599,8 @@ class OptionParser
         $lena = strlen($a);
         $lenb = strlen($b);
         if ($lena == $lenb) {
-            // returning -1 here will keep strings of the same length in the
-            // same order they originally were in
+            # returning -1 here will keep strings of the same length in the
+            # same order they originally were in
             return -1;
         }
         return $lena > $lenb ? 1 : -1;
