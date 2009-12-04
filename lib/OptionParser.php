@@ -65,7 +65,7 @@ class OptionParser
      *
      * @var int
      */
-    protected $_config;
+    protected $_config = 0;
 
     /**
      * The name of the program, as parsed from the arguments.
@@ -116,12 +116,11 @@ class OptionParser
      *
      * @param   int     $config     An optional configuration flag
      */
-    public function __construct($config=0)
+    public function __construct($config=null)
     {
-        if (!is_int($config)) {
-            $config = 0;
+        if (is_int($config)) {
+            $this->setConfig($config);
         }
-        $this->setConfig($config);
     }
 
     /**
