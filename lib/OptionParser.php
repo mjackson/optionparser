@@ -479,9 +479,11 @@ class OptionParser
                 if (isset($matches[3])) {
                     # put parameter back on stack of arguments
                     array_splice($argv, $i, 1, $matches[3]);
+                    $paramGiven = true;
                 } else {
                     # throw away the flag
                     array_splice($argv, $i, 1);
+                    $paramGiven = false;
                 }
 
                 $flag = $matches[2];
@@ -491,11 +493,11 @@ class OptionParser
 
                 if ($matches[1] == '--') {
                     # long flag
-                    $this->parseOption($flag, $argv, $i);
+                    $this->parseOption($flag, $argv, $i, $paramGiven);
                 } else {
                     # short flag
                     foreach (str_split($flag) as $shortFlag) {
-                        $this->parseOption($shortFlag, $argv, $i);
+                        $this->parseOption($shortFlag, $argv, $i, $paramGiven);
                     }
                 }
 
@@ -513,12 +515,13 @@ class OptionParser
     /**
      * Extracts the option value for the given $flag from the arguments array.
      *
-     * @param   string  $flag   The flag being parsed
-     * @param   array   $argv   The argument values
-     * @param   int     $i      The current index in the arguments array
+     * @param   string  $flag           The flag being parsed
+     * @param   array   $argv           The argument values
+     * @param   int     $i              The current index in the arguments array
+     * @param   bool    $paramGiven     True if a parameter was given using the --flag=param syntax
      * @return  void
      */
-    protected function parseOption($flag, array &$argv, $i)
+    protected function parseOption($flag, array &$argv, $i, $paramGiven)
     {
         $this->checkFlag($flag);
 
@@ -526,17 +529,18 @@ class OptionParser
         $rule = $this->_rules[$ruleIndex];
 
         if ($rule['required'] == self::PARAM_REQUIRED) {
-            if (isset($argv[$i]) && $this->isParam($argv[$i])) {
+            if (isset($argv[$i]) && ($paramGiven || $this->isParam($argv[$i]))) {
                 $slice = array_splice($argv, $i, 1);
                 $param = $slice[0];
             } else {
                 throw new Exception("Option \"$flag\" requires a parameter");
             }
         } elseif ($rule['required'] == self::PARAM_OPTIONAL) {
-            $param = true;
-            if (isset($argv[$i]) && $this->isParam($argv[$i])) {
+            if (isset($argv[$i]) && ($paramGiven || $this->isParam($argv[$i]))) {
                 $slice = array_splice($argv, $i, 1);
                 $param = $slice[0];
+            } else {
+                $param = true;
             }
         } else {
             $param = true;
