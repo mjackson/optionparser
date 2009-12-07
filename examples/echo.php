@@ -20,7 +20,7 @@ try {
     die($parser->getUsage());
 }
 
-$flagNames = array('a', 'b', 'c', 'long-a', 'long-b', 'long-c');
+$flagNames = explode(' ', 'a b c long-a long-b long-c');
 
 echo "Parsed arguments:\n";
 foreach ($flagNames as $flag) {
@@ -29,4 +29,3 @@ foreach ($flagNames as $flag) {
 }
 
 echo "\nRemaining arguments: " . implode(' ', $args) . "\n";
-

@@ -16,7 +16,7 @@ class OptionParser
      *
      * @var string
      */
-    const VERSION = '0.3';
+    const VERSION = '0.4';
 
     /**#@+
      * Configuration constant.
@@ -465,16 +465,24 @@ class OptionParser
         $this->_options = array();
 
         if ($argv === null) {
-            # create a copy so global $argv is not modified
-            $argv = array_slice($_SERVER['argv'], 0);
+            if (isset($_SERVER['argv'])) {
+                $argv = $_SERVER['argv'];
+            } else {
+                $argv = array();
+            }
         }
 
         $this->_programName = array_shift($argv);
 
         for ($i = 0; $i < count($argv); $i++) {
-            if (preg_match('/^(--?)([a-z][a-z\-]*)/i', $argv[$i], $matches)) {
-                # throw away the flag
-                array_splice($argv, $i, 1);
+            if (preg_match('/^(--?)([a-z][a-z\-]*)(?:=(.+)?)?$/i', $argv[$i], $matches)) {
+                if (isset($matches[3])) {
+                    # put parameter back on stack of arguments
+                    array_splice($argv, $i, 1, $matches[3]);
+                } else {
+                    # throw away the flag
+                    array_splice($argv, $i, 1);
+                }
 
                 $flag = $matches[2];
                 if ($this->_config & self::CONF_IGNORECASE) {
@@ -482,14 +490,10 @@ class OptionParser
                 }
 
                 if ($matches[1] == '--') {
-                    if (strpos($flag, '=') !== false) {
-                        list($flag, $value) = explode('=', $flag, 2);
-                        if ($value != '') {
-                            array_splice($argv, $i, 0, $value);
-                        }
-                    }
+                    # long flag
                     $this->parseOption($flag, $argv, $i);
                 } else {
+                    # short flag
                     foreach (str_split($flag) as $shortFlag) {
                         $this->parseOption($shortFlag, $argv, $i);
                     }
@@ -514,7 +518,7 @@ class OptionParser
      * @param   int     $i      The current index in the arguments array
      * @return  void
      */
-    protected function parseOption($flag, &$argv, $i)
+    protected function parseOption($flag, array &$argv, $i)
     {
         $this->checkFlag($flag);
 

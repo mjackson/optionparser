@@ -125,12 +125,14 @@ class OptionParserTest extends PHPUnit_Framework_TestCase
         $op = new OptionParser;
         $op->addRule('verbose');
         $op->addRule('dir-name::');
+        $op->addRule('long-req::');
 
-        $args = array("-", "--verbose=yes", '--dir-name', 'lib/test/dir');
+        $args = array("-", "--verbose=yes", '--dir-name', 'lib/test/dir', '--long-req=hi there');
         $op->parse($args);
 
         $this->assertEquals($op->verbose, 'yes');
         $this->assertEquals($op->getOption('dir-name'), 'lib/test/dir');
+        $this->assertEquals($op->getOption('long-req'), 'hi there');
 
         $this->setExpectedException('Exception');
 
