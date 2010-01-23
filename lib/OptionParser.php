@@ -6,7 +6,7 @@
  * support for both short and long options, optional and/or required parameter checking,
  * automatic callback execution, and pretty printing of usage messages.
  *
- * @author      Michael J. I. Jackson <michael@mjijackson.com>
+ * @author  Michael J. I. Jackson <mjijackson@gmail.com>
  */
 class OptionParser
 {
@@ -155,7 +155,9 @@ class OptionParser
         } catch (Exception $e) {
             return false;
         }
+
         $ruleIndex = $this->_flags[$flag];
+
         return isset($this->_options[$ruleIndex]);
     }
 
@@ -224,6 +226,7 @@ class OptionParser
     {
         $this->checkFlag($flag);
         $ruleIndex = $this->_flags[$flag];
+
         if (array_key_exists($ruleIndex, $this->_options)) {
             return $this->_options[$ruleIndex];
         } else {
@@ -357,6 +360,7 @@ class OptionParser
         );
 
         $flags = array_shift($args);
+
         if ($this->_config & self::CONF_IGNORECASE) {
             $flags = strtolower($flags);
         }
@@ -381,6 +385,7 @@ class OptionParser
         }
 
         $ruleIndex = count($this->_rules);
+
         foreach (explode('|', $flags) as $flag) {
             if ($flag) {
                 $this->_flags[$flag] = $ruleIndex;
@@ -402,7 +407,9 @@ class OptionParser
         } catch (Exception $e) {
             return null;
         }
+
         $ruleIndex = $this->_flags[$flag];
+
         return $this->_rules[$ruleIndex];
     }
 
@@ -606,11 +613,13 @@ class OptionParser
     {
         $lena = strlen($a);
         $lenb = strlen($b);
+
         if ($lena == $lenb) {
             # returning -1 here will keep strings of the same length in the
             # same order they originally were in
             return -1;
         }
+
         return $lena > $lenb ? 1 : -1;
     }
 
