@@ -234,6 +234,23 @@ class OptionParser
         }
     }
 
+    /** 
+     * Gets the values of all options as an associative array.
+     *
+     * @return Array
+     */
+    public function getAllOptions() {
+      $options = array();
+
+      foreach($this->_flags as $option => $index) {
+        if(!empty($this->_options[$index])) {
+          $options[$option] = $this->_options[$index];
+        }
+      }
+
+      return $options;
+    }
+
     /**
      * Add a usage message that will be displayed before the list of flags in the
      * output of {@link getUsage()}.
@@ -464,7 +481,7 @@ class OptionParser
      * values are provided a copy of the global $argv array will be used.
      *
      * @param   array   $argv       The command line arguments
-     * @return  void
+     * @return  array               Anything still present in $argv that wasn't matched by a rule
      * @throws  Exception
      */
     public function parse(array &$argv=null)
@@ -517,6 +534,8 @@ class OptionParser
                 }
             }
         }
+
+        return $argv;
     }
 
     /**
