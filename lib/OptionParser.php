@@ -243,7 +243,7 @@ class OptionParser
       $options = array();
 
       foreach($this->_flags as $option => $index) {
-        if(!empty($this->_options[$index])) {
+        if(array_key_exists($index, $this->_options)) {
           $options[$option] = $this->_options[$index];
         }
       }
