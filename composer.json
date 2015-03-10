@@ -1,0 +1,7 @@
+{
+    "name": "mjackson/optionparser",
+    "type": "library",
+    "autoload": {
+        "files": ["lib/OptionParser.php"]
+    }
+}
